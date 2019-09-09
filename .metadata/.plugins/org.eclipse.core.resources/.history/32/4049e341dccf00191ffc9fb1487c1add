@@ -1,0 +1,28 @@
+
+public class BigData {
+	private long alarmTime;
+	private long displayTime;
+	
+	public BigData() {
+		this.displayTime = System.currentTimeMillis();
+		this.alarmTime = 000000;
+	}
+	
+	public long getDisplayTime() {
+		return displayTime;
+	}
+	
+	public void setDisplayTime(Long newTime) {
+		displayTime = newTime;
+	}
+	
+	public long getAlarmTime() {
+		return alarmTime;
+	}
+	
+	public void setAlarmTime(long newAlarmTime) {
+		alarmTime = newAlarmTime;
+	}
+	
+	
+}
