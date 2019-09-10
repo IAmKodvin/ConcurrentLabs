@@ -1,17 +1,28 @@
+import java.util.concurrent.Semaphore;
+import clock.ClockOutput;
+
 
 public class BigData {
 	private long alarmTime;
 	private int h;
 	private int m;
 	private int s;
+	private int count;
 	private boolean alarmOn;
+	private Semaphore mutex;
+	int currentTime;
+	private ClockOutput out;
 	
-	public BigData() {
+	
+	public BigData(ClockOutput out) {
 		this.h = 0;
 		this.m = 0;
 		this.s = 0;
+		this.count = 0;
 		this.alarmTime = 000000;
 		this.alarmOn = false;
+		this.mutex = new Semaphore(1);
+		this.out = out;
 	}
 	
 	public int getDisplayTime() {
@@ -19,11 +30,18 @@ public class BigData {
 	}
 	
 	public void setDisplayTime(int newTime) {
+		try {
+			mutex.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		h = newTime / 10000;
 		newTime = newTime - h*10000;
 		m = newTime / 100;
 		newTime = newTime - m*100;
 		s = newTime;
+		mutex.release();
 	}
 	
 	public void updateDisplayTime() {
@@ -62,7 +80,14 @@ public class BigData {
 	}
 	
 	public void setAlarmTime(long newAlarmTime) {
+		try {
+			mutex.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		alarmTime = newAlarmTime;
+		mutex.release();
 	}
 	
 	public boolean getAlarmOn() {
@@ -70,12 +95,46 @@ public class BigData {
 	}
 	
 	public void setAlarmOn() {
+		out.setAlarmIndicator(true);
 		alarmOn = true;
 	}
 	
 	public void setAlarmOff() {
+		out.setAlarmIndicator(false);
 		alarmOn = false;
 	}
-	
+
+	public void tic() {
+		try {
+			mutex.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		long now = System.currentTimeMillis();
+		//System.out.println(now);
+		updateDisplayTime();
+		
+		currentTime =  getDisplayTime();
+		alarmTime = getAlarmTime();
+		
+		//System.out.println(currentTime);
+		out.displayTime(currentTime);
+		checkAlarm();
+		mutex.release();
+		
+	}
+	public void checkAlarm() {
+		if (alarmOn & ((currentTime==alarmTime) || count<20)) {
+			out.alarm();
+			count ++;
+		}
+
+		if (alarmOn & count == 20)  {
+				setAlarmOff();
+				count = 0;
+		}
+		
+	}
 	
 }
