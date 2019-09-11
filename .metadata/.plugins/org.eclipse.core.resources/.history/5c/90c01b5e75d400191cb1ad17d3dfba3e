@@ -101,7 +101,6 @@ public class BigData {
 	
 	public void setAlarmOff() {
 		out.setAlarmIndicator(false);
-		count = 0;
 		alarmOn = false;
 	}
 
@@ -126,7 +125,7 @@ public class BigData {
 		
 	}
 	public void checkAlarm() {
-		if (alarmOn & ((currentTime==alarmTime) || (0 < count & count<20))) {
+		if (alarmOn & ((currentTime==alarmTime) || count<20)) {
 			out.alarm();
 			count ++;
 		}
