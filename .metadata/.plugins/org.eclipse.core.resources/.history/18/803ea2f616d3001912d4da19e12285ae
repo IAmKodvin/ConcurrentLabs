@@ -45,6 +45,7 @@ class UpdateClock implements Runnable{
 				int currentTime =  bigData.getDisplayTime();
 				long alarmTime = bigData.getAlarmTime();
 				
+				
 				System.out.println(currentTime);
 				out.displayTime(currentTime);
 				
