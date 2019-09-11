@@ -5,6 +5,73 @@ import clock.ClockInput.UserInput;
 import clock.ClockOutput;
 import emulator.AlarmClockEmulator;
 
+<<<<<<< HEAD
+class UpdateClock implements Runnable{
+	Semaphore sem0;
+	Semaphore sem1;
+	ClockOutput out;
+	BigData bigData;
+	int count;
+	
+	public UpdateClock(ClockOutput out, BigData bigData, Semaphore sem1,  Semaphore sem0) {
+		this.sem0 = sem0;
+		this.sem1 = sem1;
+		this.out = out;
+		this.bigData = bigData;
+		this.count = 0;
+		
+	}
+	
+	private int convertTime(long time) {
+		
+		String h = Long.toString( (time / (1000*3600) + 2) % 24);
+		String m = Long.toString((time % (1000*3600)) / (1000*60));
+		String s = Long.toString((time % (1000*60)) / (1000));
+		//System.out.println(h + ", " +  m + ", " + s);
+		return Integer.parseInt(h + m + s);
+	}
+	
+	public void run() {
+		
+		long nextStop = System.currentTimeMillis();
+		try {
+			while(true) {
+				sem1.acquire();
+				nextStop = nextStop + 1000;
+				
+				long now = System.currentTimeMillis();
+				//System.out.println(now);
+				bigData.updateDisplayTime();
+				
+				int currentTime =  bigData.getDisplayTime();
+				long alarmTime = bigData.getAlarmTime();
+				
+				System.out.println(currentTime);
+				out.displayTime(currentTime);
+				
+				// alarm indication
+				if (bigData.getAlarmOn() & (currentTime == alarmTime + 20)) {
+					bigData.setAlarmOff();
+					count = 0;
+				}
+		
+				if ((alarmTime <= currentTime & alarmTime <= currentTime + 20) & bigData.getAlarmOn()) {
+						out.alarm();
+						count += 1;
+				}
+
+				sem1.release();
+				Thread.sleep(nextStop - System.currentTimeMillis());
+				
+			}
+		} catch (InterruptedException e) {
+			System.out.println("Exception in thread: "+ e.getMessage());
+		}
+	}
+}
+
+=======
+>>>>>>> 1568f48781708f7da7fcf3517d778b67a6a319e8
 public class ClockMain {
 
     public static void main(String[] args) throws InterruptedException {
