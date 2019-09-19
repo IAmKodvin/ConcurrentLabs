@@ -87,7 +87,6 @@ public class BigData {
 			e.printStackTrace();
 		}
 		alarmTime = newAlarmTime;
-		count = 0;
 		mutex.release();
 	}
 	
@@ -128,7 +127,7 @@ public class BigData {
 	}
 	public void checkAlarm() {
 		System.out.println("checking alarm, count is:" + count);
-		if (alarmOn & ((currentTime==alarmTime) || (0 < count && count<20))) {
+		if (alarmOn & ((currentTime==alarmTime) || (0 < count & count<20))) {
 			out.alarm();
 			count ++;
 		}

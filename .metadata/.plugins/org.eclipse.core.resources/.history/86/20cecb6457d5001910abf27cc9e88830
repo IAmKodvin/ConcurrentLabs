@@ -33,18 +33,14 @@ public class ToolController {
         // TODO: you will need to modify this method
         //
         if (widgetKind == WidgetKind.BLUE_RECTANGULAR_WIDGET) {
-            isPressing = true;
         	conveyor.off();
             press.on();
+            isPressing = true;
             Thread.sleep(pressingMillis);
             press.off();
             Thread.sleep(pressingMillis);
             notifyAll();
-            if(!isPainting) {
-            	conveyor.on();
-            }
-            isPressing = false;
-            
+            conveyor.on();
         }
     }
 
@@ -58,10 +54,10 @@ public class ToolController {
             Thread.sleep(paintingMillis);
             paint.off();
             Thread.sleep(paintingMillis);
+           	isPainting = false;
            	while(isPressing) {
            		wait();
            	}
-           	isPainting = false;
            	conveyor.on();
         }
     }

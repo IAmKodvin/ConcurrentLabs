@@ -30,7 +30,7 @@ public class UpdateClock implements Runnable{
 		
 		long nextStop = System.currentTimeMillis();
 			while(true) {
-				System.out.println("Tick!");
+				
 				nextStop = nextStop + 1000;
 				bigData.tic();
 				try {

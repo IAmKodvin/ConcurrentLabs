@@ -8,7 +8,6 @@ public class ToolController {
     private final DigitalSignal conveyor, press, paint;
     private final long pressingMillis, paintingMillis;
     
-    private volatile long startPressingTime;
     private volatile boolean isPressing;
     private volatile boolean isPainting;
     
@@ -23,7 +22,6 @@ public class ToolController {
         this.paint = paint;
         this.pressingMillis = pressingMillis;
         this.paintingMillis = paintingMillis;
-        this.startPressingTime = 0;
         this.isPressing = false;
         this.isPainting = false;
     }
@@ -33,18 +31,8 @@ public class ToolController {
         // TODO: you will need to modify this method
         //
         if (widgetKind == WidgetKind.BLUE_RECTANGULAR_WIDGET) {
-            isPressing = true;
-        	conveyor.off();
-            press.on();
-            Thread.sleep(pressingMillis);
-            press.off();
-            Thread.sleep(pressingMillis);
-            notifyAll();
-            if(!isPainting) {
-            	conveyor.on();
-            }
-            isPressing = false;
-            
+            conveyorHandler();
+            pressSynced();
         }
     }
 
@@ -53,16 +41,8 @@ public class ToolController {
         // TODO: you will need to modify this method
         //
         if (widgetKind == WidgetKind.ORANGE_ROUND_WIDGET) {
-        	isPainting = true;
-            paint.on();
-            Thread.sleep(paintingMillis);
-            paint.off();
-            Thread.sleep(paintingMillis);
-           	while(isPressing) {
-           		wait();
-           	}
-           	isPainting = false;
-           	conveyor.on();
+            conveyorHandler();
+            paintSynced();
         }
     }
     
@@ -78,7 +58,11 @@ public class ToolController {
     
     private synchronized void pressSynced() throws InterruptedException {
     	long time = System.currentTimeMillis();
-
+        press.on();
+        isPressing = true;
+        Thread.sleep(pressingMillis);
+        press.off();
+        Thread.sleep(pressingMillis);
         isPressing = false;
         notifyAll();
        

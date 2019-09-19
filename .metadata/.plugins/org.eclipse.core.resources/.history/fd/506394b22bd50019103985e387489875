@@ -35,9 +35,9 @@ public class ClockMain {
             int value = userInput.getValue();
             
             
-            int test1 = 246060;
-            long test2 = 246060;
-            System.out.println(test1 == test2);
+            int test1 = 123;
+            long test2 = 123;
+            System.out.print(test1 == test2);
             
             switch (choice) {
             	// set time
