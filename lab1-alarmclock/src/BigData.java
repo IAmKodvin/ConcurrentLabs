@@ -12,8 +12,8 @@ public class BigData {
 	private Semaphore mutex;
 	int currentTime;
 	private ClockOutput out;
-	
-	
+
+
 	public BigData(ClockOutput out) {
 		this.h = 0;
 		this.m = 0;
@@ -24,17 +24,16 @@ public class BigData {
 		this.mutex = new Semaphore(1);
 		this.out = out;
 	}
-	
+
 	public int getDisplayTime() {
 		return h*10000 + m*100 + s;
 	}
-	
+
 	public void setDisplayTime(int newTime) {
 		try {
 			mutex.acquire();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Error(e);
 		}
 		h = newTime / 10000;
 		newTime = newTime - h*10000;
@@ -43,8 +42,9 @@ public class BigData {
 		s = newTime;
 		mutex.release();
 	}
-	
-	public void updateDisplayTime() {
+
+	public void updateDisplayTime() throws InterruptedException {
+		mutex.acquire();
 		s ++;
 		if (s > 59){
 			s = 0;
@@ -59,85 +59,77 @@ public class BigData {
 			m = 0;
 			s = 0;
 		}
+		mutex.release();
 	}
-	
-/*
-	private long convertToMilli(int time) {
-		String s = Integer.toString(time);
-		long millis = 0
-		for (int i = 0; i < s.length(); i++){
-			int nbr = 
-			if(i<2) {
-				millis += s.charAt(i)
-			}
-		    char c = s.charAt(i);        
-		    //Process char
-		}
-	}
-*/
+
 	public long getAlarmTime() {
 		return alarmTime;
 	}
-	
+
 	public void setAlarmTime(long newAlarmTime) {
 		try {
 			mutex.acquire();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Error(e);
 		}
 		alarmTime = newAlarmTime;
 		count = 0;
 		mutex.release();
 	}
-	
+
 	public boolean getAlarmOn() {
 		return alarmOn;
 	}
-	
-	public void setAlarmOn() {
+
+	public void setAlarmOn() throws InterruptedException {
+		mutex.acquire();
 		out.setAlarmIndicator(true);
 		alarmOn = true;
+		mutex.release();
 	}
-	
-	public void setAlarmOff() {
+
+	public void setAlarmOff() throws InterruptedException {
+		mutex.acquire();
 		out.setAlarmIndicator(false);
 		count = 0;
 		alarmOn = false;
+		mutex.release();
 	}
 
-	public void tic() {
+	public void tic() throws InterruptedException {
+
+		//System.out.println(now);
+		updateDisplayTime();
 		try {
 			mutex.acquire();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		long now = System.currentTimeMillis();
-		//System.out.println(now);
-		updateDisplayTime();
-		
-		currentTime =  getDisplayTime();
-		alarmTime = getAlarmTime();
-		
-		//System.out.println(currentTime);
-		out.displayTime(currentTime);
-		checkAlarm();
-		mutex.release();
-		
-	}
-	public void checkAlarm() {
-		System.out.println("checking alarm, count is:" + count);
-		if (alarmOn & ((currentTime==alarmTime) || (0 < count && count<20))) {
-			out.alarm();
-			count ++;
+			throw new Error(e);
 		}
 
-		if (alarmOn & count == 20)  {
-				setAlarmOff();
-				count = 0;
-		}
-		
+		currentTime =  getDisplayTime();
+		alarmTime = getAlarmTime();
+
+		//System.out.println(currentTime);
+		out.displayTime(currentTime);
+		mutex.release();
+		checkAlarm();
+
 	}
-	
+
+	public void checkAlarm() throws InterruptedException {
+		mutex.acquire();
+		if (alarmOn && ((currentTime==alarmTime) || (0 < count && count<20))) {
+			out.alarm();
+			
+			count ++;
+			
+		}
+
+		if (alarmOn && count == 20)  {
+			setAlarmOff();
+		}
+		mutex.release();
+
+	}
+
 }

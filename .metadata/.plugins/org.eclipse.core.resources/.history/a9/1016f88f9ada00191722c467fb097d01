@@ -1,0 +1,216 @@
+package factory.controller;
+
+import factory.model.DigitalSignal;
+import factory.model.WidgetKind;
+import factory.swingview.Factory;
+
+public class ToolController {
+<<<<<<< HEAD
+    private final DigitalSignal conveyor, press, paint;
+    private final long pressingMillis, paintingMillis;
+    
+    private volatile long startPressingTime;
+    private volatile boolean isPressing;
+    private volatile boolean isPainting;
+    
+    public ToolController(DigitalSignal conveyor,
+                          DigitalSignal press,
+                          DigitalSignal paint,
+                          long pressingMillis,
+                          long paintingMillis)
+    {
+        this.conveyor = conveyor;
+        this.press = press;
+        this.paint = paint;
+        this.pressingMillis = pressingMillis;
+        this.paintingMillis = paintingMillis;
+        this.startPressingTime = 0;
+        this.isPressing = false;
+        this.isPainting = false;
+    }
+
+    public void onPressSensorHigh(WidgetKind widgetKind) throws InterruptedException {
+        //
+        // TODO: you will need to modify this method
+        //
+        if (widgetKind == WidgetKind.BLUE_RECTANGULAR_WIDGET) {
+            isPressing = true;
+        	conveyor.off();
+            press.on();
+            Thread.sleep(pressingMillis);
+            press.off();
+            Thread.sleep(pressingMillis);
+            notifyAll();
+            if(!isPainting) {
+            	conveyor.on();
+            }
+            isPressing = false;
+            
+        }
+    }
+
+    public void onPaintSensorHigh(WidgetKind widgetKind) throws InterruptedException {
+        //
+        // TODO: you will need to modify this method
+        //
+        if (widgetKind == WidgetKind.ORANGE_ROUND_WIDGET) {
+        	isPainting = true;
+            paint.on();
+            Thread.sleep(paintingMillis);
+            paint.off();
+            Thread.sleep(paintingMillis);
+           	while(isPressing) {
+           		wait();
+           	}
+           	isPainting = false;
+           	conveyor.on();
+        }
+    }
+    
+    // -----------------------------------------------------------------------
+    
+    private synchronized void conveyorHandler() throws InterruptedException {
+    	while(isPainting || isPressing) {
+    		conveyor.off();
+    		wait();
+    	}
+    	conveyor.on();
+    }
+    
+    private synchronized void pressSynced() throws InterruptedException {
+    	long time = System.currentTimeMillis();
+
+        isPressing = false;
+        notifyAll();
+       
+    }
+    
+    private synchronized void paintSynced() throws InterruptedException {
+    	isPainting = true;
+        paint.on();
+        Thread.sleep(paintingMillis);
+        paint.off();
+        Thread.sleep(paintingMillis);
+       	isPainting = false;
+        notifyAll();
+    }
+    
+    public static void main(String[] args) {
+        Factory factory = new Factory();
+        factory.startSimulation();
+    }
+=======
+	private final DigitalSignal conveyor, press, paint;
+	private final long pressingMillis, paintingMillis;
+	private boolean isPressing, isPainting;
+
+	public ToolController(DigitalSignal conveyor,
+			DigitalSignal press,
+			DigitalSignal paint,
+			long pressingMillis,
+			long paintingMillis)
+	{
+		this.conveyor = conveyor;
+		this.press = press;
+		this.paint = paint;
+		this.pressingMillis = pressingMillis;
+		this.paintingMillis = paintingMillis;
+		this.isPainting = false;
+		this.isPressing = false;
+	}
+
+	public synchronized void onPressSensorHigh(WidgetKind widgetKind) throws InterruptedException {
+
+		if (widgetKind == WidgetKind.BLUE_RECTANGULAR_WIDGET) {
+
+			pressStartHelp();
+			waitOutside(pressingMillis);            
+			pressOffHelp();            
+			waitOutside(pressingMillis);   // press needs this time to retract            
+			pressOffNotifyHelp();
+
+			while(isPainting) {
+				System.out.println("Waiting in painting");
+				wait();
+			}            
+			conveyor.on();
+		}
+	}
+
+
+	public synchronized void onPaintSensorHigh(WidgetKind widgetKind) throws InterruptedException {
+
+		if (widgetKind == WidgetKind.ORANGE_ROUND_WIDGET) {
+
+			paintStartHelp();            
+			waitOutside(paintingMillis);
+			paintOffHelp();            
+			waitOutside(paintingMillis);   // press needs this time to retract
+			paintOffNotifyHelp();            
+
+			while(isPressing) {
+				System.out.println("Waiting in painting");
+				wait();
+			}           
+			conveyor.on();
+		}
+	}
+
+
+	// ------------------------------ Help Method On -------------------------------
+	/** Helper method: sleep outside of monitor for ’millis’ milliseconds. */
+	private void waitOutside(long millis) throws InterruptedException {
+		
+		long timeToWakeUp = System.currentTimeMillis() + millis;
+		
+		while ( timeToWakeUp > System.currentTimeMillis() ) {
+			
+			long dt = timeToWakeUp - System.currentTimeMillis();/* number of milliseconds left */ 
+			//System.out.println("dt: " + dt);
+			
+			//if(dt > 0) {
+			wait(dt);
+			//System.out.println("inne i if");
+			//}
+			
+		}
+	}
+
+	private synchronized void pressStartHelp() {
+		conveyor.off();
+		press.on();
+		isPressing = true;
+	}
+
+	private synchronized void pressOffHelp() {
+		press.off();
+	}
+
+	private synchronized void pressOffNotifyHelp() {
+		isPressing = false;
+		notifyAll();
+	}
+
+	private synchronized void paintStartHelp() {
+		conveyor.off();
+		paint.on();
+		isPainting = true;
+	}
+
+	private synchronized void paintOffHelp() {
+		paint.off();
+	}
+
+	private synchronized void paintOffNotifyHelp() {
+		isPainting = false;
+		notifyAll();
+	}
+
+	// --------------------- Help Methods End ------------------------------
+
+	public static void main(String[] args) {
+		Factory factory = new Factory();
+		factory.startSimulation();
+	}
+>>>>>>> 072fa80afa2000e466346e1cf65b2e19124d6124
+}

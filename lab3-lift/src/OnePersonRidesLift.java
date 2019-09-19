@@ -6,6 +6,8 @@ public class OnePersonRidesLift {
 
     public static void main(String[] args) {
 
+    	int[] test = new int[20];
+    	System.out.print(test);
         LiftView view = new LiftView();
 
         Passenger passenger = view.createPassenger();
