@@ -1,0 +1,21 @@
+import lift.LiftView;
+import lift.LiftThread;
+import lift.Passenger;
+import lift.PassengerThread;
+
+public class TwentyPeopleRidesLift {
+
+	public static void main(String[] args) {
+
+		LiftThread view = new LiftThread();
+		
+		Passenger[] passengers = new Passenger[20];
+		for(int i=0; i<20; i++) {
+			passengers[i] = view.createPassenger();
+			
+			passengers[i].start();
+		}
+
+	}
+
+}

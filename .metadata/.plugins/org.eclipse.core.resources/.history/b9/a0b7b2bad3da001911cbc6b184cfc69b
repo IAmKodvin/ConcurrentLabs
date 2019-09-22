@@ -1,0 +1,17 @@
+package lift;
+
+public class PassengerThread extends Thread {
+	Passenger passenger;
+	public PassengerThread(LiftView view) {
+		super();
+		this.passenger = view.createPassenger();
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+        this.passenger.begin();              // walk in (from left)
+    }
+
+
+}

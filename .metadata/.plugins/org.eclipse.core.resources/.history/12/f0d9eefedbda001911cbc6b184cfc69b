@@ -1,0 +1,30 @@
+package lift;
+public class Monitor {
+	private int here; // If here!=next, here (floor number) tells from which floor
+	// the lift is moving and next to which floor it is moving.
+	private int next; // If here==next, the lift is standing still on the floor
+	// given by here.
+	private int[] waitEntry; // Number of passengers waiting to enter the lift at the
+	// various floors.
+	private int[] waitExit; // Number of passengers (inside the lift) waiting to leave
+	// the lift at the various floors.
+	private int load; // Number of passengers currently in the lift.
+	private LiftViewThread view;
+	
+	public Monitor(LiftViewThread view){
+		this.view = view;
+	}
+	
+	public synchronized void receiveWaitingOnLift(int from, int destination) {
+		waitEntry[from]++;
+		waitExit[destination]++;
+	}
+	
+	public synchronized int getHere() {
+		return here;
+	}
+	
+	public synchronized int getLoad() {
+		return load;
+	}
+}
