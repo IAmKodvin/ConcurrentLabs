@@ -1,7 +1,8 @@
 package lift;
 
-public class LiftViewThread extends LiftView implements Runnable {
+public class LiftViewThread extends Thread{
 	private PassengerThread[] passengers;
+	private LiftView view;
 	private Monitor monitor;
 	private int here;
 	private int next;
@@ -9,6 +10,8 @@ public class LiftViewThread extends LiftView implements Runnable {
 	
 	public LiftViewThread(Monitor monitor) {
 		super();
+		this.view = new LiftView();
+		
 		this.monitor = monitor;
 		this.here = 0;
 		this.next = 0;
@@ -17,47 +20,25 @@ public class LiftViewThread extends LiftView implements Runnable {
 
 	@Override
 	public void run() {
-
-		//try {
-			//wait();
 		while(true){
-				stopCheck();
-				move();
+				try {
+					monitor.liftStopCheck();
+					int[] a = monitor.moveLift(view);
+					// monitor.liftMoving(true)
+					view.moveLift(a[0], a[1]);
+					monitor.updateHere(a[1]);
+					//
+					
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			
-		//} catch (InterruptedException e) {
-		//	e.printStackTrace();
-		//}
-		
-		
 	}
 	
-	public void move() {
-		if(here == 6) {
-			increment = -1;
-		}
-		if(here == 0) {
-			increment = 1;
-		}
-		
-		next = here + increment;
-		monitor.updateNext(next);
-		this.moveLift(here, here + increment);
-		here = next;
-		
-		monitor.updateHere(here);
+	public Passenger createPassenger() {
+		return this.view.createPassenger();
 	}
 	
-	public void stopCheck(){
-		while(monitor.checkFloorEntering() || monitor.checkFloorExiting()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 	
 	
 	
