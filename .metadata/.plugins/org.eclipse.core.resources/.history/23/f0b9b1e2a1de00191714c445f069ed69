@@ -1,0 +1,52 @@
+package lift;
+import java.util.Random;
+
+public class PassengerThread extends Thread {
+	Passenger passenger;
+	Random rnd;
+	Monitor monitor;
+	int start;
+	int destination;
+	LiftViewThread view;
+	
+	public PassengerThread(LiftViewThread view, Monitor monitor) {
+		super();
+		this.rnd = new Random();
+		this.view = view;
+		this.monitor = monitor;
+		
+		this.passenger = view.createPassenger();
+		this.start = passenger.getStartFloor();
+		this.destination = passenger.getDestinationFloor();
+	}
+	
+	private void initPassenger() {
+		this.passenger = view.createPassenger();
+		this.start = passenger.getStartFloor();
+		this.destination = passenger.getDestinationFloor();
+	}
+	
+	@Override
+	public void run(){
+		while(true) {
+			try {
+				walkToLift();
+				monitor.waitOnLiftAndEnter(passenger, start, destination);	
+				monitor.waitInLiftAndExit(passenger, destination);
+				passenger.end();
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private void walkToLift() throws InterruptedException {
+		sleep(rnd.nextInt(46)*1000);
+		this.passenger.begin();
+		//sleep(3500);
+	}
+	
+	
+}

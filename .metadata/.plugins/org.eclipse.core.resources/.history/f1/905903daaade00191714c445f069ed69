@@ -24,7 +24,6 @@ public class Monitor {
 		waitEntry[start]++;
 		System.out.println("Person arrived on floor" + start);
 		notifyAll();
-		// destination-start is direction of travel, increment*(direction) < 0 WAIT
 		while((start != here) || (here!=next) || (load == 4)) {
 			System.out.println("Person waiting");
 			wait();
@@ -34,6 +33,7 @@ public class Monitor {
 		increaseLoad();
 		decreaseWaiting(start);
 		System.out.println("Done waiting, start=" + start + " destination=" + destination );
+		
 	}
 	
 	public synchronized int getHere() {
@@ -125,7 +125,6 @@ public class Monitor {
 
 		int[] a = new int[2];
 		
-		// if no one wants to enter or exit in direction of lift travel, switch increment
 		if(here == 6) {
 			increment = -1;
 		}

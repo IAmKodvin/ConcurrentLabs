@@ -24,7 +24,6 @@ public class Monitor {
 		waitEntry[start]++;
 		System.out.println("Person arrived on floor" + start);
 		notifyAll();
-		// destination-start is direction of travel, increment*(direction) < 0 WAIT
 		while((start != here) || (here!=next) || (load == 4)) {
 			System.out.println("Person waiting");
 			wait();
@@ -34,6 +33,7 @@ public class Monitor {
 		increaseLoad();
 		decreaseWaiting(start);
 		System.out.println("Done waiting, start=" + start + " destination=" + destination );
+		
 	}
 	
 	public synchronized int getHere() {
@@ -105,27 +105,17 @@ public class Monitor {
 		decreaseExit(destination);
 	}
 	
-	public synchronized boolean activePassengers() {
-		for(int i=0; i<7; i++) {
-			if((waitEntry[i] != 0) || (waitExit[i] !=0)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	public synchronized int[] moveLift(LiftView view) throws InterruptedException {
 		// Lift is staying still on floor here == next
 		here = next;
 		notifyAll();
-		while( checkFloorEntering() || checkFloorExiting() || !activePassengers()) {
+		while( checkFloorEntering() || checkFloorExiting() ) {
 			System.out.println("Stopcheck waiting");
 			wait();
 		}
 
 		int[] a = new int[2];
 		
-		// if no one wants to enter or exit in direction of lift travel, switch increment
 		if(here == 6) {
 			increment = -1;
 		}

@@ -24,7 +24,7 @@ public class PassengerThread extends Thread {
 			this.passenger = view.createPassenger();		
 			this.start = passenger.getStartFloor();
 			this.destination = passenger.getDestinationFloor();
-			sleep(rnd.nextInt(46)*1000);
+			//sleep(rnd.nextInt(46)*1000);
 			this.passenger.begin();
 			monitor.waitOnLiftAndEnter(passenger, start, destination);
 			monitor.waitInLiftAndExit(passenger, destination);
