@@ -14,7 +14,7 @@ public class TwentyPeopleRidesLift {
 		viewThread.start();
 		
 		PassengerThread[] passengers = new PassengerThread[20];
-		for(int i=0; i<1; i++) {
+		for(int i=0; i<20; i++) {
 			passengers[i] = new PassengerThread(view, monitor);
 			passengers[i].start();
 		}
