@@ -1,3 +1,5 @@
+
+
 import java.math.BigInteger;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -21,8 +23,10 @@ import rsa.ProgressTracker;
 public class CodeBreaker implements SnifferCallback {
 
     private final JPanel workList;
-    private final JPanel progressList;    
+    private final JPanel progressList;
+    
     private final JProgressBar mainProgressBar;
+    
     private ExecutorService pool;
 
     // -----------------------------------------------------------------------
@@ -81,7 +85,6 @@ public class CodeBreaker implements SnifferCallback {
     
     private void breakButtonAction(WorklistItem newItem, ProgressItem newProgress, String message, BigInteger n) {
 
-    	//Remove worklist, add progressList
     	progressList.add(newProgress);
     	workList.remove(newItem);
  
@@ -103,7 +106,9 @@ public class CodeBreaker implements SnifferCallback {
     	SwingUtilities.invokeLater(() -> {
     		progressItem.getTextArea().setText(decoded);	
     		onCrackDone(progressItem);
-    	});    	
+    	});
+    	
+    	
     }
     
     private void onCrackDone(ProgressItem progressItem) {

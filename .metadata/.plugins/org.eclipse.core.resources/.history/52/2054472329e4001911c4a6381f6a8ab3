@@ -1,3 +1,5 @@
+
+
 import java.math.BigInteger;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -21,8 +23,10 @@ import rsa.ProgressTracker;
 public class CodeBreaker implements SnifferCallback {
 
     private final JPanel workList;
-    private final JPanel progressList;    
+    private final JPanel progressList;
+    
     private final JProgressBar mainProgressBar;
+    
     private ExecutorService pool;
 
     // -----------------------------------------------------------------------
@@ -81,7 +85,6 @@ public class CodeBreaker implements SnifferCallback {
     
     private void breakButtonAction(WorklistItem newItem, ProgressItem newProgress, String message, BigInteger n) {
 
-    	//Remove worklist, add progressList
     	progressList.add(newProgress);
     	workList.remove(newItem);
  
@@ -91,8 +94,8 @@ public class CodeBreaker implements SnifferCallback {
     	ProgressTracker tracker = new Tracker(newProgress.getProgressBar(), mainProgressBar);
     	//pool.execute(() -> crackCode(message, n, tracker, newProgress));
     	
-    	// Optional
     	Future future = pool.submit(() -> crackCode(message, n, tracker, newProgress));
+    	// Optional
     	JButton c = new JButton("Cancel");
     	newProgress.add(c);
     	c.addActionListener(e -> cancelButtonAction(future));
@@ -100,10 +103,9 @@ public class CodeBreaker implements SnifferCallback {
     
     private void crackCode(String message, BigInteger n, ProgressTracker tracker, ProgressItem progressItem) {
     	String decoded = Factorizer.crack(message, n, tracker);
-    	SwingUtilities.invokeLater(() -> {
-    		progressItem.getTextArea().setText(decoded);	
-    		onCrackDone(progressItem);
-    	});    	
+    	SwingUtilities.invokeLater(() -> progressItem.getTextArea().setText(decoded));
+    	SwingUtilities.invokeLater(() -> onCrackDone(progressItem));
+    	
     }
     
     private void onCrackDone(ProgressItem progressItem) {
@@ -146,13 +148,25 @@ public class CodeBreaker implements SnifferCallback {
          */
         @Override  
         public void onProgress(int ppmDelta) {
-        	SwingUtilities.invokeLater(() -> updateBar(ppmDelta));  
+        	SwingUtilities.invokeLater(() -> updateBar(ppmDelta));
+        	
+        	/* totalProgress += ppmDelta;
+            int percent = totalProgress / 10000;
+        	progressBar.setValue(totalProgress);
+        	mainProgressBar.setValue(mainProgressBar.getValue() + ppmDelta);
+            if (percent != prevPercent) {
+
+                prevPercent = percent;
+            }*/
+  
         }
         
         private void updateBar(int ppmDelta) {
         	totalProgress += ppmDelta;
         	progressBar.setValue(totalProgress);
-        	mainProgressBar.setValue(mainProgressBar.getValue() + ppmDelta);	
-        }        
+        	mainProgressBar.setValue(mainProgressBar.getValue() + ppmDelta);
+        	
+        }
+        
     }
 }
