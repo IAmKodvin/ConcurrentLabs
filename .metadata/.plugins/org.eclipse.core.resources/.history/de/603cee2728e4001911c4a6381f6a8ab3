@@ -87,18 +87,12 @@ public class CodeBreaker implements SnifferCallback {
 
     	progressList.add(newProgress);
     	workList.remove(newItem);
- 
+    	
     	//Update main progress
     	mainProgressBar.setMaximum(mainProgressBar.getMaximum() + 1000000);
 
     	ProgressTracker tracker = new Tracker(newProgress.getProgressBar(), mainProgressBar);
-    	//pool.execute(() -> crackCode(message, n, tracker, newProgress));
-    	
-    	Future future = pool.submit(() -> crackCode(message, n, tracker, newProgress));
-    	// Optional
-    	JButton c = new JButton("Cancel");
-    	newProgress.add(c);
-    	c.addActionListener(e -> cancelButtonAction(future));
+    	pool.execute(() -> crackCode(message, n, tracker, newProgress));
     }
     
     private void crackCode(String message, BigInteger n, ProgressTracker tracker, ProgressItem progressItem) {
@@ -109,9 +103,9 @@ public class CodeBreaker implements SnifferCallback {
     }
     
     private void onCrackDone(ProgressItem progressItem) {
-    	JButton r = new JButton("Remove");
-    	progressItem.add(r);
-    	r.addActionListener(e -> removeButtonAction(progressItem));
+    	JButton c = new JButton("Remove");
+    	progressItem.add(c);
+    	c.addActionListener(e -> removeButtonAction(progressItem));
     }
     
     private void removeButtonAction(ProgressItem progressItem) {
@@ -119,10 +113,7 @@ public class CodeBreaker implements SnifferCallback {
     	//Update main progress
     	mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
     	mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
-    }
-    
-    private void cancelButtonAction(Future future) {
-    	future.cancel(true);
+    	
     }
     
     // ------------------------------------------------------------------------------

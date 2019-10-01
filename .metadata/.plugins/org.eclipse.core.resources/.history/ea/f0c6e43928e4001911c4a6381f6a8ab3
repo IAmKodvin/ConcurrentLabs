@@ -111,7 +111,7 @@ public class CodeBreaker implements SnifferCallback {
     private void onCrackDone(ProgressItem progressItem) {
     	JButton r = new JButton("Remove");
     	progressItem.add(r);
-    	r.addActionListener(e -> removeButtonAction(progressItem));
+    	c.addActionListener(e -> removeButtonAction(progressItem));
     }
     
     private void removeButtonAction(ProgressItem progressItem) {
