@@ -33,13 +33,10 @@ public class CodeBreaker implements SnifferCallback {
     
     private CodeBreaker() {
         StatusWindow w  = new StatusWindow();
-        w.enableErrorChecks();
 
         this.workList        = w.getWorkList();
         this.progressList    = w.getProgressList();
         this.mainProgressBar = w.getProgressBar();
-        mainProgressBar.setMaximum(0);
-        
         
         // Create thread pool
         this.pool = Executors.newFixedThreadPool(2);
@@ -77,6 +74,8 @@ public class CodeBreaker implements SnifferCallback {
     	
     	// Progresslist
 		ProgressItem newProgress = new ProgressItem(n, message);
+		JButton c = new JButton("Cancel!");
+		newProgress.add(c);
     	
 		//Button Actions
 		b.addActionListener(e -> breakButtonAction(newWork, newProgress, message, n));
@@ -87,32 +86,18 @@ public class CodeBreaker implements SnifferCallback {
 
     	progressList.add(newProgress);
     	workList.remove(newItem);
-    	
-    	//Update main progress
-    	mainProgressBar.setMaximum(mainProgressBar.getMaximum() + 1000000);
 
-    	ProgressTracker tracker = new Tracker(newProgress.getProgressBar(), mainProgressBar);
+    	ProgressTracker tracker = new Tracker(newProgress.getProgressBar());
     	pool.execute(() -> crackCode(message, n, tracker, newProgress));
     }
     
     private void crackCode(String message, BigInteger n, ProgressTracker tracker, ProgressItem progressItem) {
     	String decoded = Factorizer.crack(message, n, tracker);
-    	SwingUtilities.invokeLater(() -> progressItem.getTextArea().setText(decoded));
-    	SwingUtilities.invokeLater(() -> onCrackDone(progressItem));
-    	
+    	progressItem.getTextArea().removeAll();
+    	progressItem.getTextArea().replaceSelection(decoded);
     }
     
-    private void onCrackDone(ProgressItem progressItem) {
-    	JButton c = new JButton("Remove");
-    	progressItem.add(c);
-    	c.addActionListener(e -> removeButtonAction(progressItem));
-    }
-    
-    private void removeButtonAction(ProgressItem progressItem) {
-    	progressList.remove(progressItem);
-    	//Update main progress
-    	mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
-    	mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
+    private void cancelButtonAction() {
     	
     }
     
@@ -122,12 +107,10 @@ public class CodeBreaker implements SnifferCallback {
         private int totalProgress = 0;
         private int prevPercent = -1;
         private JProgressBar progressBar;
-        private JProgressBar mainProgressBar;
         
-        public Tracker(JProgressBar progressBar, JProgressBar mainProgressBar) {
+        public Tracker(JProgressBar progressBar) {
         	super();
         	this.progressBar = progressBar;
-        	this.mainProgressBar = mainProgressBar;
         }
 
         /**
@@ -137,27 +120,15 @@ public class CodeBreaker implements SnifferCallback {
          * @param  ppmDelta   portion of work done since last call,
          *                    measured in ppm (parts per million)
          */
-        @Override  
+        @Override
         public void onProgress(int ppmDelta) {
-        	SwingUtilities.invokeLater(() -> updateBar(ppmDelta));
-        	
-        	/* totalProgress += ppmDelta;
+            totalProgress += ppmDelta;
             int percent = totalProgress / 10000;
-        	progressBar.setValue(totalProgress);
-        	mainProgressBar.setValue(mainProgressBar.getValue() + ppmDelta);
             if (percent != prevPercent) {
-
+            	progressBar.setValue(totalProgress);
                 prevPercent = percent;
-            }*/
-  
+            }
+            
         }
-        
-        private void updateBar(int ppmDelta) {
-        	totalProgress += ppmDelta;
-        	progressBar.setValue(totalProgress);
-        	mainProgressBar.setValue(mainProgressBar.getValue() + ppmDelta);
-        	
-        }
-        
     }
 }

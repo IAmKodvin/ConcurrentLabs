@@ -111,7 +111,7 @@ public class CodeBreaker implements SnifferCallback {
     private void removeButtonAction(ProgressItem progressItem) {
     	progressList.remove(progressItem);
     	//Update main progress
-    	mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
+    	
     	mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
     	
     }

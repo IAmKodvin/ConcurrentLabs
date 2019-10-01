@@ -97,7 +97,7 @@ public class CodeBreaker implements SnifferCallback {
     
     private void crackCode(String message, BigInteger n, ProgressTracker tracker, ProgressItem progressItem) {
     	String decoded = Factorizer.crack(message, n, tracker);
-    	SwingUtilities.invokeLater(() -> progressItem.getTextArea().setText(decoded));
+    	progressItem.getTextArea().setText(decoded);
     	SwingUtilities.invokeLater(() -> onCrackDone(progressItem));
     	
     }
@@ -111,7 +111,7 @@ public class CodeBreaker implements SnifferCallback {
     private void removeButtonAction(ProgressItem progressItem) {
     	progressList.remove(progressItem);
     	//Update main progress
-    	mainProgressBar.setValue(mainProgressBar.getValue() - 1000000);
+    	
     	mainProgressBar.setMaximum(mainProgressBar.getMaximum() - 1000000);
     	
     }
