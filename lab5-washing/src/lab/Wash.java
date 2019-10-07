@@ -20,11 +20,29 @@ public class Wash {
         temp.start();
         water.start();
         spin.start();
+        
+        MessagingThread[] programs = new MessagingThread[4];
+        programs[1] = new WashingProgram1(io, temp, water, spin);
+        programs[3] = new WashingProgram3(io, temp, water, spin);
 
+        int runningProgram = 0;
         while (true) {
             int n = io.awaitButton();
             System.out.println("user selected program " + n);
-
+            
+            if ((n == 0) && (runningProgram != 0)) {
+            	programs[runningProgram].interrupt();
+            	programs[1] = new WashingProgram1(io, temp, water, spin);
+            	//programs[2] = new WashingProgram2(io, temp, water, spin);
+            	programs[3] = new WashingProgram3(io, temp, water, spin);
+            	runningProgram = 0;
+            }
+            
+            if ((n != 0) && (runningProgram == 0)) {
+            	programs[n].start();
+            	runningProgram = n;
+            }
+            
             // TODO:
             // if the user presses buttons 1-3, start a washing program
             // if the user presses button 0, and a program has been started, stop it

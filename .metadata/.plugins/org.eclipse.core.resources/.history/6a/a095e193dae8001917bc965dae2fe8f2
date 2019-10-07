@@ -1,0 +1,89 @@
+package lab;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
+import wash.WashingIO;
+
+public class SpinController extends MessagingThread<WashingMessage> {
+	private WashingIO io;
+	private boolean spinLeft;
+
+    public SpinController(WashingIO io) {
+        this.io = io;    
+        boolean spinLeft = true;
+        }
+
+    @Override
+    public void run() {
+        try {
+
+            // ... TODO ...
+
+            while (true) {
+                // wait for up to a (simulated) minute for a WashingMessage
+                WashingMessage m = receiveWithTimeout(60000 / Wash.SPEEDUP);
+                
+                switch(m.getCommand()) {
+                case WashingMessage.SPIN_OFF :
+                	stopSpinning();
+                   break; // optional
+                
+                case WashingMessage.SPIN_SLOW :
+                	spinSlow();
+                   break; // optional
+
+                case WashingMessage.SPIN_FAST :
+                	spinFast();
+                    break; // optional
+             }
+
+                // if m is null, it means a minute passed and no message was received
+                if (m != null) {
+                    System.out.println("got " + m);
+                }
+                
+                // ... TODO ...
+            }
+        } catch (InterruptedException unexpected) {
+            // we don't expect this thread to be interrupted,
+            // so throw an error if it happens anyway
+            throw new Error(unexpected);
+        }
+    }
+    
+    private void spinSlow() {
+    	long t0 = System.currentTimeMillis();
+    	// convert time to millis
+    	//time = time*1000;
+    	// (t0+time) > System.currentTimeMillis()
+    	while(true) {
+    		// everytime a minute has passed
+	    	if ( Wash.SPEEDUP*((System.currentTimeMillis()-t0)/1000) / 60 >= 0 ) {
+	    		changeDirection();
+	    		t0 = System.currentTimeMillis();
+	    	}
+    	}
+    }
+    
+    private void changeDirection() {
+		if(spinLeft) {
+			spinLeft = false;
+			io.setSpinMode(io.SPIN_RIGHT);
+		} else {
+			spinLeft = true;
+			io.setSpinMode(io.SPIN_LEFT);
+		}
+
+		
+	}
+
+	private void spinFast() {
+    	io.setSpinMode(io.SPIN_FAST);
+    }
+    
+    private void stopSpinning() {
+    	io.setSpinMode(io.SPIN_IDLE);
+    }
+    
+    
+}

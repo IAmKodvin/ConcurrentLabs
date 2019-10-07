@@ -1,0 +1,17 @@
+package lab;
+
+import wash.WashingIO;
+
+public class WaterController extends MessagingThread<WashingMessage> {
+	private WashingIO io;
+
+
+    public WaterController(WashingIO io) {
+        this.io = io;
+    }
+
+    @Override
+    public void run() {
+        // TODO
+    }
+}

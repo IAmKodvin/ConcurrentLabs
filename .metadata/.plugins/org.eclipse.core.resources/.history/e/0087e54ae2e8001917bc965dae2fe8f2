@@ -1,0 +1,22 @@
+package lab;
+
+import wash.WashingIO;
+
+public class TemperatureController extends MessagingThread<WashingMessage> {
+
+    private int dt;
+    private double mu;
+    private double ml;
+
+    public TemperatureController(WashingIO io) {
+        // TODO
+    	this.dt = 10;
+    	this.mu = 0.0478 * dt;
+    	this.ml = 0.000952 * dt;
+    }
+
+    @Override
+    public void run() {
+        // TODO
+    }
+}
