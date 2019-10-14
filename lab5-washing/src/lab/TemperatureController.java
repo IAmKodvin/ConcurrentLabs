@@ -8,6 +8,8 @@ public class TemperatureController extends MessagingThread<WashingMessage> {
     private double mu;
     private double ml;
     private double temp;
+    private boolean ack;
+    private MessagingThread<WashingMessage> commander;
 
     
     public TemperatureController(WashingIO io) {
@@ -16,6 +18,7 @@ public class TemperatureController extends MessagingThread<WashingMessage> {
     	this.mu = 0.0478 * dt;
     	this.ml = 0.000952 * dt;
     	this.io = io;
+    	this.ack = true;
     }
 
     @Override
@@ -23,21 +26,30 @@ public class TemperatureController extends MessagingThread<WashingMessage> {
         // TODO
 		while(true) {
     	try {
-			WashingMessage m = receiveWithTimeout(dt / Wash.SPEEDUP);
+			WashingMessage m = receiveWithTimeout(dt*1000 / Wash.SPEEDUP);
 			
 			if (m != null) {
+				commander = m.getSender();
+				
 				if(m.getCommand() == WashingMessage.TEMP_IDLE) {
 					temp = 0;
 					io.heat(false);
+					commander.send(new WashingMessage(this, WashingMessage.ACKNOWLEDGMENT));
 				}
 				
 				if(m.getCommand() == WashingMessage.TEMP_SET) {
 					temp = m.getValue();
 					regulate();
+					ack = false;
 				}
 				
 			} else {
 				regulate();
+				if ((io.getTemperature() >= temp  - 2 ) && !ack) {
+					ack = true;
+					commander.send(new WashingMessage(this, WashingMessage.ACKNOWLEDGMENT));
+				}
+				
 			}
 			
 			
@@ -49,6 +61,7 @@ public class TemperatureController extends MessagingThread<WashingMessage> {
     }
 
 	private void regulate() {
+		
 		// TODO Auto-generated method stub
 		if(io.getTemperature()<(temp-2+ml)){
 			if(io.getWaterLevel()>0) {

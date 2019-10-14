@@ -23,6 +23,7 @@ public class Wash {
         
         MessagingThread[] programs = new MessagingThread[4];
         programs[1] = new WashingProgram1(io, temp, water, spin);
+        programs[2] = new WashingProgram2(io, temp, water, spin);
         programs[3] = new WashingProgram3(io, temp, water, spin);
 
         int runningProgram = 0;
@@ -33,7 +34,7 @@ public class Wash {
             if ((n == 0) && (runningProgram != 0)) {
             	programs[runningProgram].interrupt();
             	programs[1] = new WashingProgram1(io, temp, water, spin);
-            	//programs[2] = new WashingProgram2(io, temp, water, spin);
+            	programs[2] = new WashingProgram2(io, temp, water, spin);
             	programs[3] = new WashingProgram3(io, temp, water, spin);
             	runningProgram = 0;
             }

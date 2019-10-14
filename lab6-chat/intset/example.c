@@ -3,9 +3,9 @@
 
 #include "intset.h"
 
-int
-main()
+int main()
 {
+  
   struct intset *s = intset_create();
 
   intset_add(s, 7);

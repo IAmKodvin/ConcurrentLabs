@@ -14,6 +14,7 @@ struct intset {
   int size;
   int allocated;
   int *data;
+  pthread_mutex_t lock;
 };
 
 // special value indicating a free array element
@@ -25,6 +26,7 @@ struct intset *
 intset_create()
 {
   struct intset *s = malloc(sizeof(struct intset));
+  pthread_mutex_init(&s->lock, NULL);
 
   // if memory allocation fails, terminate with an error
   if(s == NULL) {
@@ -78,6 +80,7 @@ find(struct intset *s, int a)
 bool
 intset_add(struct intset *s, int a)
 {
+  pthread_mutex_lock(&s->lock);
   // rehash if more than 70% is used
   if (s->size >= s->allocated * 7 / 10) {
     int old_allocated = s->allocated;
@@ -109,12 +112,13 @@ intset_add(struct intset *s, int a)
 
   int idx = find(s, a);
   if (s->data[idx] == a) {
+    pthread_mutex_unlock(&s->lock);
     return false;
   }
 
   s->data[idx] = a;
   s->size++;
-
+  pthread_mutex_unlock(&s->lock);
   return true;
 }
 
@@ -123,10 +127,11 @@ intset_add(struct intset *s, int a)
 bool
 intset_contains(struct intset *s, int a)
 {
+  pthread_mutex_lock(&s->lock);
   // use private helper function above
   int idx = find(s, a);
   bool found = (s->data[idx] == a);
-
+  pthread_mutex_unlock(&s->lock);
   return found;
 }
 
@@ -135,7 +140,8 @@ intset_contains(struct intset *s, int a)
 int
 intset_size(struct intset *s)
 {
+  pthread_mutex_lock(&s->lock);
   int sz = s->size;
-
+  pthread_mutex_unlock(&s->lock);
   return sz;
 }

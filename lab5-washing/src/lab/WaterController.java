@@ -45,6 +45,7 @@ public class WaterController extends MessagingThread<WashingMessage> {
 				if(m.getCommand() == WashingMessage.WATER_DRAIN) {
 					io.fill(false);
 					filling = false;
+					draining = true;
 					io.drain(true);
 				}
 				

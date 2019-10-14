@@ -37,13 +37,18 @@ class WashingProgram3 extends MessagingThread<WashingMessage> {
             
             // Switch off heating
             temp.send(new WashingMessage(this, WashingMessage.TEMP_IDLE));
+            WashingMessage ack = receive();
 
             // Switch off spin
             spin.send(new WashingMessage(this, WashingMessage.SPIN_OFF));
+            
 
             // Drain barrel (may take some time)
+            System.out.println("Before drain");
             water.send(new WashingMessage(this, WashingMessage.WATER_DRAIN));
-            WashingMessage ack = receive();  // wait for acknowledgment
+            System.out.println("Before receive");
+            ack = receive();  // wait for acknowledgment
+            System.out.println("After receive");
             System.out.println("got " + ack);
             water.send(new WashingMessage(this, WashingMessage.WATER_IDLE));
 
@@ -59,6 +64,7 @@ class WashingProgram3 extends MessagingThread<WashingMessage> {
 
             try {
 				temp.send(new WashingMessage(this, WashingMessage.TEMP_IDLE));
+				WashingMessage ack = receive(); 
 	            water.send(new WashingMessage(this, WashingMessage.WATER_IDLE));
 	            spin.send(new WashingMessage(this, WashingMessage.SPIN_OFF));
 			} catch (InterruptedException e1) {
