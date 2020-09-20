@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="ChatTest" project="lab6-chat" tests="3" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="test.ChatTest" incomplete="true" displayname="ChatTest" uniqueid="[engine:junit-jupiter]/[class:test.ChatTest]">
-    <testcase name="testAllTwits" classname="test.ChatTest" incomplete="true" displayname="testAllTwits()" uniqueid="[engine:junit-jupiter]/[class:test.ChatTest]/[method:testAllTwits()]"/>
-    <testcase name="testTwoTwits" classname="test.ChatTest" incomplete="true" displayname="testTwoTwits()" uniqueid="[engine:junit-jupiter]/[class:test.ChatTest]/[method:testTwoTwits()]"/>
-    <testcase name="testOneTwit" classname="test.ChatTest" incomplete="true" displayname="testOneTwit()" uniqueid="[engine:junit-jupiter]/[class:test.ChatTest]/[method:testOneTwit()]"/>
-  </testsuite>
-</testrun>

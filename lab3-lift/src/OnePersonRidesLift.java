@@ -12,7 +12,9 @@ public class OnePersonRidesLift {
 
         int from = passenger.getStartFloor();
         int to   = passenger.getDestinationFloor();
-
+        int test = -1;
+        test++;
+        System.out.print(test);
         passenger.begin();              // walk in (from left)
         if (from != 0) {
             view.moveLift(0, from);
